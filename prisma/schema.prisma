@@ -1,0 +1,224 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ===================================
+// Product Models
+// ===================================
+
+model Product {
+  id          String   @id @default(cuid())
+  name        String
+  description String   @db.Text
+  price       Float
+  category    Category @relation(fields: [categoryId], references: [id])
+  categoryId  String
+  images      String[] // Array of image URLs
+  featured    Boolean  @default(false)
+  inStock     Boolean  @default(true)
+  stock       Int      @default(0)
+  
+  // Dimensions and specifications
+  dimensions  String?
+  material    String?
+  color       String?
+  weight      Float?
+  
+  // SEO
+  slug        String   @unique
+  metaTitle   String?
+  metaDescription String?
+  
+  // Relations
+  collection  Collection? @relation(fields: [collectionId], references: [id])
+  collectionId String?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([categoryId])
+  @@index([collectionId])
+  @@index([featured])
+  @@index([slug])
+}
+
+model Category {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  slug        String    @unique
+  description String?   @db.Text
+  image       String?
+  products    Product[]
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  @@index([slug])
+}
+
+model Collection {
+  id          String    @id @default(cuid())
+  name        String
+  slug        String    @unique
+  description String    @db.Text
+  image       String
+  featured    Boolean   @default(false)
+  products    Product[]
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  @@index([slug])
+  @@index([featured])
+}
+
+// ===================================
+// Art Models
+// ===================================
+
+model Artist {
+  id          String     @id @default(cuid())
+  name        String
+  slug        String     @unique
+  bio         String     @db.Text
+  photo       String?
+  website     String?
+  instagram   String?
+  artPieces   ArtPiece[]
+  
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  
+  @@index([slug])
+}
+
+model ArtPiece {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  description String   @db.Text
+  price       Float
+  image       String
+  images      String[] // Multiple images
+  
+  // Art details
+  medium      String   // Oil, Acrylic, Digital, etc.
+  dimensions  String   // e.g., "100x80 cm"
+  year        Int?
+  edition     String?  // e.g., "1/10" for limited editions
+  
+  // Availability
+  available   Boolean  @default(true)
+  featured    Boolean  @default(false)
+  
+  // Relations
+  artist      Artist   @relation(fields: [artistId], references: [id])
+  artistId    String
+  
+  // SEO
+  metaTitle   String?
+  metaDescription String?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([artistId])
+  @@index([slug])
+  @@index([featured])
+  @@index([available])
+}
+
+// ===================================
+// User Engagement Models
+// ===================================
+
+model NewsletterSubscription {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  active      Boolean  @default(true)
+  subscribedAt DateTime @default(now())
+  
+  @@index([email])
+}
+
+model ContactForm {
+  id          String   @id @default(cuid())
+  name        String
+  email       String
+  phone       String?
+  message     String   @db.Text
+  status      String   @default("pending") // pending, read, replied
+  
+  createdAt   DateTime @default(now())
+  
+  @@index([status])
+  @@index([createdAt])
+}
+
+// ===================================
+// Order Models (for future e-commerce)
+// ===================================
+
+model Order {
+  id          String      @id @default(cuid())
+  orderNumber String      @unique
+  
+  // Customer info
+  customerName  String
+  customerEmail String
+  customerPhone String?
+  
+  // Shipping
+  shippingAddress String @db.Text
+  shippingCity    String
+  shippingState   String?
+  shippingZip     String
+  shippingCountry String @default("México")
+  
+  // Order details
+  items       OrderItem[]
+  subtotal    Float
+  shipping    Float       @default(0)
+  tax         Float       @default(0)
+  total       Float
+  
+  // Status
+  status      String      @default("pending") // pending, processing, shipped, delivered, cancelled
+  paymentStatus String    @default("pending") // pending, paid, failed, refunded
+  
+  // Tracking
+  trackingNumber String?
+  notes       String?     @db.Text
+  
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  
+  @@index([orderNumber])
+  @@index([status])
+  @@index([customerEmail])
+  @@index([createdAt])
+}
+
+model OrderItem {
+  id          String  @id @default(cuid())
+  order       Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId     String
+  
+  productId   String
+  productName String
+  productImage String
+  quantity    Int
+  price       Float
+  total       Float
+  
+  @@index([orderId])
+}
+

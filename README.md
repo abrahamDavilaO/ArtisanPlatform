@@ -1,36 +1,169 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ARTISAN - Plataforma de Muebles y Arte
 
-## Getting Started
+Plataforma moderna de e-commerce para muebles de diseño y arte contemporáneo, construida con Next.js, TypeScript, Tailwind CSS y Prisma.
 
-First, run the development server:
+## 🚀 Tecnologías
+
+- **Next.js 16** - Framework React con App Router
+- **TypeScript** - Tipado estático
+- **Tailwind CSS v4** - Estilos utilitarios
+- **Prisma 5.19** - ORM para base de datos
+- **PostgreSQL** - Base de datos relacional
+
+## 📦 Instalación
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# Instalar dependencias
+npm install
+
+# Configurar variables de entorno
+# Edita el archivo .env con tu conexión a PostgreSQL
+DATABASE_URL="postgresql://usuario:password@localhost:5432/artisan_db?schema=public"
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🗄️ Configuración de Base de Datos
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 1. Crear la base de datos PostgreSQL
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+# Conéctate a PostgreSQL
+psql -U postgres
 
-## Learn More
+# Crea la base de datos
+CREATE DATABASE artisan_db;
+```
 
-To learn more about Next.js, take a look at the following resources:
+### 2. Ejecutar migraciones de Prisma
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+# Generar el cliente de Prisma
+npx prisma generate
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+# Crear y aplicar migraciones
+npx prisma migrate dev --name init
 
-## Deploy on Vercel
+# Ver la base de datos en Prisma Studio (opcional)
+npx prisma studio
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 3. Seed de datos (opcional)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+# Crear datos de prueba
+npx prisma db seed
+```
+
+## 🏃 Desarrollo
+
+```bash
+# Iniciar servidor de desarrollo
+npm run dev
+
+# La aplicación estará disponible en:
+# http://localhost:3000
+```
+
+## 📊 Modelos de Base de Datos
+
+### Productos y Categorías
+- **Product** - Productos (muebles, accesorios, etc.)
+- **Category** - Categorías de productos
+- **Collection** - Colecciones curadas
+
+### Arte
+- **Artist** - Artistas
+- **ArtPiece** - Obras de arte
+
+### Engagement
+- **NewsletterSubscription** - Suscripciones al newsletter
+- **ContactForm** - Formularios de contacto
+
+### E-commerce (futuro)
+- **Order** - Órdenes de compra
+- **OrderItem** - Items de órdenes
+
+## 🎨 Características
+
+- ✨ Animaciones fluidas inspiradas en Figma
+- 📱 Diseño responsive
+- 🎯 SEO optimizado
+- ♿ Accesible
+- 🚀 Rendimiento optimizado con Turbopack
+- 🎨 Diseño premium con glassmorphism
+
+## 📝 Scripts Disponibles
+
+```bash
+npm run dev          # Desarrollo
+npm run build        # Build de producción
+npm run start        # Servidor de producción
+npm run lint         # Linter
+npx prisma studio    # Interfaz visual de base de datos
+npx prisma migrate   # Gestión de migraciones
+```
+
+## 🔧 Comandos Útiles de Prisma
+
+```bash
+# Generar cliente después de cambios en schema
+npx prisma generate
+
+# Crear nueva migración
+npx prisma migrate dev --name nombre_migracion
+
+# Aplicar migraciones en producción
+npx prisma migrate deploy
+
+# Resetear base de datos (¡cuidado!)
+npx prisma migrate reset
+
+# Ver y editar datos
+npx prisma studio
+```
+
+## 🌐 Estructura del Proyecto
+
+```
+artisan-platform/
+├── prisma/
+│   └── schema.prisma          # Esquema de base de datos
+├── src/
+│   ├── app/                   # App Router de Next.js
+│   │   ├── page.tsx          # Página principal
+│   │   ├── layout.tsx        # Layout principal
+│   │   └── globals.css       # Estilos globales
+│   ├── components/
+│   │   ├── ui/               # Componentes UI reutilizables
+│   │   └── sections/         # Secciones de la página
+│   ├── lib/
+│   │   ├── prisma.ts         # Cliente de Prisma
+│   │   └── utils.ts          # Utilidades
+│   └── types/
+│       └── index.ts          # Tipos TypeScript
+├── public/                    # Archivos estáticos
+└── package.json
+```
+
+## 🚀 Despliegue
+
+### Vercel (Recomendado)
+
+1. Conecta tu repositorio a Vercel
+2. Configura las variables de entorno (DATABASE_URL)
+3. Despliega automáticamente
+
+### Variables de Entorno en Producción
+
+```env
+DATABASE_URL="postgresql://..."
+NEXT_PUBLIC_APP_URL="https://tu-dominio.com"
+```
+
+## 📄 Licencia
+
+MIT
+
+## 👨‍💻 Autor
+
+Desarrollado con ❤️ para ARTISAN
+# ArtisanPlatform
