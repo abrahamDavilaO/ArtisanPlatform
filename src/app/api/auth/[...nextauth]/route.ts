@@ -18,7 +18,7 @@ export const authOptions: NextAuthOptions = {
         signIn: "/", // Redirect to home page with modal
     },
     callbacks: {
-        async signIn({ user, account, profile }) {
+        async signIn({ user: _user, account: _account, profile: _profile }) {
             // You can add custom logic here
             // For example, save user to your database
             return true;

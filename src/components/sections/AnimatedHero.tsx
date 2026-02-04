@@ -104,9 +104,11 @@ export function AnimatedHero() {
 
     useEffect(() => {
         // Initialize window dimensions
-        setWindowDimensions({
-            width: window.innerWidth,
-            height: window.innerHeight
+        requestAnimationFrame(() => {
+            setWindowDimensions({
+                width: window.innerWidth,
+                height: window.innerHeight
+            });
         });
 
         const handleMouseMove = (e: MouseEvent) => {
