@@ -105,62 +105,20 @@ export function About() {
                     {/* Animated Workshop Scene */}
                     <div className="relative rounded-xl overflow-hidden shadow-2xl aspect-[4/5] group">
                         {/* Base Image */}
-                        <img
-                            src="/images/about/workshop.jpg"
-                            alt="Taller de artesanía ARTISAN"
+                        <video
+                            autoPlay
+                            muted
+                            loop
+                            playsInline
+                            poster="/images/about/workshop.jpg"
                             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                        />
+                        >
+                            <source src="/videos/carpentry-art.mp4" type="video/mp4" />
+                        </video>
 
-                        {/* Animated Overlay - Dark vignette */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20" />
 
-                        {/* Animated Light Rays */}
-                        <div className="absolute top-0 right-0 w-full h-full overflow-hidden opacity-40">
-                            <div className="absolute top-1/4 right-1/4 w-96 h-1 bg-gradient-to-r from-transparent via-amber-300 to-transparent rotate-45 animate-light-sweep" />
-                            <div className="absolute top-1/3 right-1/3 w-80 h-1 bg-gradient-to-r from-transparent via-amber-400 to-transparent rotate-45 animate-light-sweep animation-delay-1000" />
-                        </div>
-
-                        {/* Wood Particles/Dust */}
-                        {[...Array(15)].map((_, i) => (
-                            <div
-                                key={`particle-${i}`}
-                                className="absolute w-1 h-1 bg-amber-200 rounded-full opacity-60 animate-float-particle"
-                                style={{
-                                    left: `${Math.random() * 100}%`,
-                                    top: `${Math.random() * 100}%`,
-                                    animationDelay: `${Math.random() * 3}s`,
-                                    animationDuration: `${3 + Math.random() * 2}s`,
-                                }}
-                            />
-                        ))}
-
-                        {/* Sparks Effect */}
-                        {[...Array(8)].map((_, i) => (
-                            <div
-                                key={`spark-${i}`}
-                                className="absolute w-0.5 h-0.5 bg-amber-400 rounded-full animate-spark"
-                                style={{
-                                    left: `${30 + Math.random() * 40}%`,
-                                    top: `${40 + Math.random() * 20}%`,
-                                    animationDelay: `${Math.random() * 2}s`,
-                                }}
-                            />
-                        ))}
-
-                        {/* Hammer Strike Effect */}
-                        <div className="absolute bottom-1/3 left-1/3 w-16 h-16">
-                            <div className="relative w-full h-full animate-hammer-strike">
-                                <div className="absolute inset-0 bg-amber-500 rounded-full opacity-0 animate-pulse-ring" />
-                            </div>
-                        </div>
-
-                        {/* Tool Silhouettes */}
-                        <div className="absolute top-8 right-8 opacity-20 animate-tool-swing">
-                            <svg className="w-12 h-12 text-white" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M13.78 15.3l-2.08-2.08c-.39.39-.39 1.03 0 1.42l2.08 2.08c.39.39 1.02.39 1.41 0l5.66-5.66c.39-.39.39-1.02 0-1.41l-2.08-2.08c-.39-.39-1.02-.39-1.41 0L13.78 11.1c-.39.39-.39 1.03 0 1.42l2.08 2.08c.39.39.39 1.02 0 1.41l-2.08 2.08c-.39.39-1.02.39-1.41 0z" />
-                                <path d="M4.22 12.58l2.08 2.08c.39.39 1.02.39 1.41 0l5.66-5.66c.39-.39.39-1.02 0-1.41L11.29 5.51c-.39-.39-1.02-.39-1.41 0L4.22 11.17c-.39.39-.39 1.02 0 1.41z" />
-                            </svg>
-                        </div>
+                        {/* Animated Overlay - Reduced opacity for clarity */}
+                        <div className="absolute inset-0 bg-black/20" />
 
                         {/* Animated Text Overlay */}
                         <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 to-transparent">
@@ -177,12 +135,8 @@ export function About() {
                             </div>
                         </div>
 
-                        {/* Corner Decorations */}
-                        <div className="absolute top-4 left-4 w-8 h-8 border-l-2 border-t-2 border-amber-400 opacity-60 animate-pulse-slow" />
-                        <div className="absolute bottom-4 right-4 w-8 h-8 border-r-2 border-b-2 border-amber-400 opacity-60 animate-pulse-slow animation-delay-1000" />
-
-                        {/* Hover Effect - Additional Glow */}
-                        <div className="absolute inset-0 bg-gradient-to-br from-amber-500/0 to-amber-500/0 group-hover:from-amber-500/10 group-hover:to-orange-500/10 transition-all duration-700" />
+                        {/* Hover Effect - Subtle */}
+                        <div className="absolute inset-0 bg-transparent group-hover:bg-amber-500/5 transition-colors duration-700" />
                     </div>
                 </div>
 

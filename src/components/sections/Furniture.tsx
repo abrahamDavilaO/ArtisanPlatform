@@ -98,6 +98,7 @@ export function Furniture() {
                             <div className="group relative rounded-xl overflow-hidden bg-white shadow-md hover:shadow-xl transition-all duration-500 hover:-translate-y-2">
                                 {/* Image */}
                                 <div className={`${item.large ? "aspect-[21/9]" : "aspect-[16/10]"} overflow-hidden`}>
+                                    {/* eslint-disable-next-line @next/next/no-img-element */}
                                     <img
                                         src={item.image}
                                         alt={item.title}
