@@ -7,7 +7,7 @@ import { subscribeToNewsletter } from "@/app/actions/database";
 export function Newsletter() {
     const [email, setEmail] = React.useState("");
     const [isSubmitted, setIsSubmitted] = React.useState(false);
-    const [message, setMessage] = React.useState(false);
+    const [message, setMessage] = React.useState("");
     const [isError, setIsError] = React.useState(false);
 
     const handleSubmit = async (e: React.FormEvent) => {

@@ -3,7 +3,6 @@
 import * as React from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { Button } from "../ui/Button";
 import { RegisterModal } from "./RegisterModal";
 
 const navLinks = [
