@@ -108,14 +108,26 @@ export function ProductForm({ categories, product, submitLabel, action }: Produc
                         name="categoryId"
                         defaultValue={product?.categoryId || categories[0]?.id}
                         required
-                        className="w-full rounded-lg border-2 border-neutral-200 px-4 py-2.5 text-neutral-900 outline-none transition-colors focus:border-amber-500"
+                        disabled={categories.length === 0}
+                        className="w-full rounded-lg border-2 border-neutral-200 px-4 py-2.5 text-neutral-900 outline-none transition-colors focus:border-amber-500 disabled:cursor-not-allowed disabled:bg-neutral-100"
                     >
-                        {categories.map((category) => (
-                            <option key={category.id} value={category.id}>
-                                {category.name}
-                            </option>
-                        ))}
+                        {categories.length === 0 ? (
+                            <option value="">Sin categorías — ejecuta el seed en la base de datos</option>
+                        ) : (
+                            categories.map((category) => (
+                                <option key={category.id} value={category.id}>
+                                    {category.name}
+                                </option>
+                            ))
+                        )}
                     </select>
+                    {categories.length === 0 && (
+                        <p className="mt-2 text-sm text-amber-700">
+                            No hay categorías en la base de datos. Ejecuta{" "}
+                            <code className="rounded bg-amber-50 px-1">npx ts-node scripts/seed-categories.ts</code>{" "}
+                            contra tu base de producción.
+                        </p>
+                    )}
                 </div>
             </div>
 
