@@ -26,7 +26,13 @@ export function RegisterModal({ isOpen, onClose }: RegisterModalProps) {
         });
 
         if (result?.error) {
-            setError("Correo o contraseña incorrectos.");
+            if (result.error === "Configuration") {
+                setError(
+                    "Falta configurar NEXTAUTH_SECRET o NEXTAUTH_URL en el servidor de producción."
+                );
+            } else {
+                setError("Correo o contraseña incorrectos.");
+            }
             setIsSubmitting(false);
             return;
         }
@@ -35,6 +41,7 @@ export function RegisterModal({ isOpen, onClose }: RegisterModalProps) {
         setPassword("");
         setIsSubmitting(false);
         onClose();
+        window.location.href = "/admin/products";
     };
 
     if (!isOpen) return null;
