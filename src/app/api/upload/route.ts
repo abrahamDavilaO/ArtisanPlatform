@@ -54,6 +54,12 @@ async function uploadFile(file: File) {
         return uploadToBlob(file, folder);
     }
 
+    if (process.env.VERCEL) {
+        throw new Error(
+            "En producción debes configurar Vercel Blob. Ve a Vercel → Storage → Create Blob, o pega una URL de imagen en el formulario."
+        );
+    }
+
     return uploadLocally(file, folder);
 }
 
