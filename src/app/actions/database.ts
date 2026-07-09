@@ -126,6 +126,28 @@ export async function getProductBySlug(slug: string) {
     }
 }
 
+export async function getSimilarProducts(categoryId: string, excludeProductId: string, limit = 4) {
+    try {
+        const products = await prisma.product.findMany({
+            where: {
+                categoryId,
+                id: { not: excludeProductId },
+                inStock: true,
+            },
+            include: {
+                category: true,
+            },
+            take: limit,
+            orderBy: { createdAt: "desc" },
+        });
+
+        return products;
+    } catch (error) {
+        console.error("Error fetching similar products:", error);
+        return [];
+    }
+}
+
 // ===================================
 // Collection Actions
 // ===================================
@@ -172,6 +194,53 @@ export async function getFeaturedArtPieces() {
     }
 }
 
+export async function getAllArtists() {
+    try {
+        const artists = await prisma.artist.findMany({
+            orderBy: { name: "asc" },
+        });
+
+        return artists;
+    } catch (error) {
+        console.error("Error fetching artists:", error);
+        return [];
+    }
+}
+
+export async function getArtPieceBySlug(slug: string) {
+    try {
+        const artPiece = await prisma.artPiece.findUnique({
+            where: { slug },
+            include: { artist: true },
+        });
+
+        return artPiece;
+    } catch (error) {
+        console.error("Error fetching art piece:", error);
+        return null;
+    }
+}
+
+export async function getSimilarArtPieces(excludeArtPieceId: string, limit = 4) {
+    try {
+        const artPieces = await prisma.artPiece.findMany({
+            where: {
+                id: { not: excludeArtPieceId },
+                available: true,
+                featured: true,
+            },
+            include: { artist: true },
+            take: limit,
+            orderBy: { createdAt: "desc" },
+        });
+
+        return artPieces;
+    } catch (error) {
+        console.error("Error fetching similar art pieces:", error);
+        return [];
+    }
+}
+
 export async function getArtistBySlug(slug: string) {
     try {
         const artist = await prisma.artist.findUnique({
@@ -210,5 +279,23 @@ export async function getAllCategories() {
     } catch (error) {
         console.error("Error fetching categories:", error);
         return [];
+    }
+}
+
+export async function getCategoryBySlug(categorySlug: string) {
+    try {
+        const category = await prisma.category.findUnique({
+            where: { slug: categorySlug },
+            include: {
+                _count: {
+                    select: { products: true },
+                },
+            },
+        });
+
+        return category;
+    } catch (error) {
+        console.error("Error fetching category:", error);
+        return null;
     }
 }

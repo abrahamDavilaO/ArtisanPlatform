@@ -1,42 +1,25 @@
 "use client";
 
 import * as React from "react";
-import { Button } from "../ui/Button";
-import { formatPrice } from "@/lib/utils";
+import Link from "next/link";
+import { getCategoryImage } from "@/lib/category-images";
 
-const furnitureItems = [
-    {
-        id: 1,
-        category: "Sofás",
-        title: "Confort Sublime",
-        price: 2499,
-        image: "/images/furniture/sofa.jpg",
-        large: true,
-    },
-    {
-        id: 2,
-        category: "Mesas",
-        title: "Elegancia Funcional",
-        price: 899,
-        image: "/images/furniture/table.jpg",
-    },
-    {
-        id: 3,
-        category: "Sillas",
-        title: "Diseño Icónico",
-        price: 449,
-        image: "/images/furniture/chair.jpg",
-    },
-    {
-        id: 4,
-        category: "Iluminación",
-        title: "Luz Escultural",
-        price: 329,
-        image: "/images/furniture/lamp.jpg",
-    },
-];
+interface FurnitureCategory {
+    id: string;
+    name: string;
+    slug: string;
+    description: string | null;
+    image: string | null;
+    _count?: {
+        products: number;
+    };
+}
 
-export function Furniture() {
+interface FurnitureProps {
+    categories: FurnitureCategory[];
+}
+
+export function Furniture({ categories }: FurnitureProps) {
     const [visibleItems, setVisibleItems] = React.useState<number[]>([]);
     const sectionRef = React.useRef<HTMLElement>(null);
 
@@ -45,7 +28,7 @@ export function Furniture() {
             (entries) => {
                 entries.forEach((entry) => {
                     if (entry.isIntersecting) {
-                        furnitureItems.forEach((_, index) => {
+                        categories.forEach((_, index) => {
                             setTimeout(() => {
                                 setVisibleItems((prev) => [...prev, index]);
                             }, index * 100);
@@ -62,7 +45,7 @@ export function Furniture() {
         }
 
         return () => observer.disconnect();
-    }, []);
+    }, [categories]);
 
     return (
         <section
@@ -81,50 +64,54 @@ export function Furniture() {
                     </h2>
                 </div>
 
-                {/* Furniture Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6">
-                    {furnitureItems.map((item, index) => (
-                        <div
-                            key={item.id}
-                            className={`
-                ${item.large ? "lg:col-span-12" : "lg:col-span-6"}
-                transition-all duration-700
-                ${visibleItems.includes(index)
-                                    ? "opacity-100 translate-y-0"
-                                    : "opacity-0 translate-y-12"
-                                }
-              `}
-                        >
-                            <div className="group relative rounded-xl overflow-hidden bg-white shadow-md hover:shadow-xl transition-all duration-500 hover:-translate-y-2">
-                                {/* Image */}
-                                <div className={`${item.large ? "aspect-[21/9]" : "aspect-[16/10]"} overflow-hidden`}>
-                                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                                    <img
-                                        src={item.image}
-                                        alt={item.title}
-                                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                                    />
+                {categories.length > 0 ? (
+                    <div className="flex gap-4 overflow-x-auto pb-4 sm:grid sm:grid-cols-2 sm:overflow-visible lg:grid-cols-4">
+                        {categories.map((category, index) => {
+                            const imageSrc = getCategoryImage(category.slug, category.image);
+
+                            return (
+                            <Link
+                                key={category.id}
+                                href={`/furniture/${category.slug}`}
+                                className={`
+                                    group min-w-[170px] rounded-xl bg-white shadow-md transition-all duration-700 hover:-translate-y-2 hover:shadow-xl
+                                    ${visibleItems.includes(index)
+                                        ? "opacity-100 translate-y-0"
+                                        : "opacity-0 translate-y-12"
+                                    }
+                                `}
+                            >
+                                <div className="relative aspect-square overflow-hidden rounded-t-xl bg-gradient-to-br from-neutral-100 to-amber-50">
+                                    {imageSrc && (
+                                        // eslint-disable-next-line @next/next/no-img-element
+                                        <img
+                                            src={imageSrc}
+                                            alt={category.name}
+                                            className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                        />
+                                    )}
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
                                 </div>
 
-                                {/* Content */}
-                                <div className="p-6">
-                                    <span className="text-xs font-semibold uppercase tracking-wider text-amber-600 mb-2 block">
-                                        {item.category}
-                                    </span>
-                                    <h3 className="font-serif text-2xl font-semibold text-neutral-900 mb-2">
-                                        {item.title}
+                                <div className="p-4 text-center">
+                                    <h3 className="font-serif text-xl font-semibold text-neutral-900">
+                                        {category.name}
                                     </h3>
-                                    <p className="text-lg text-neutral-600 mb-4">
-                                        Desde {formatPrice(item.price)}
-                                    </p>
-                                    <Button variant="link" className="p-0">
-                                        Ver más →
-                                    </Button>
+                                    <span className="mt-2 block text-xs font-semibold uppercase tracking-wider text-amber-600">
+                                        {category._count?.products ?? 0} productos
+                                    </span>
                                 </div>
-                            </div>
-                        </div>
-                    ))}
-                </div>
+                            </Link>
+                            );
+                        })}
+                    </div>
+                ) : (
+                    <div className="rounded-2xl border border-dashed border-neutral-300 bg-neutral-50 p-10 text-center">
+                        <p className="text-neutral-600">
+                            Aún no hay categorías de muebles publicadas.
+                        </p>
+                    </div>
+                )}
             </div>
         </section>
     );

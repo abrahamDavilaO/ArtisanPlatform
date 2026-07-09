@@ -8,8 +8,18 @@ export function cn(...inputs: ClassValue[]) {
 export function formatPrice(price: number): string {
     return new Intl.NumberFormat("es-MX", {
         style: "currency",
-        currency: "USD",
+        currency: "MXN",
     }).format(price);
+}
+
+export function slugify(value: string): string {
+    return value
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "");
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
