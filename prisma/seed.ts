@@ -1,53 +1,113 @@
 import { PrismaClient } from '@prisma/client'
+import { hash } from 'bcryptjs'
 
 const prisma = new PrismaClient()
 
 async function main() {
     console.log('🌱 Iniciando seed de la base de datos...')
 
+    const adminEmail = process.env.ADMIN_EMAIL?.toLowerCase().trim()
+    const adminPassword = process.env.ADMIN_PASSWORD
+
+    if (adminEmail && adminPassword) {
+        await prisma.user.upsert({
+            where: { email: adminEmail },
+            update: {
+                role: 'ADMIN',
+                passwordHash: await hash(adminPassword, 12),
+            },
+            create: {
+                email: adminEmail,
+                name: 'Administrador',
+                role: 'ADMIN',
+                passwordHash: await hash(adminPassword, 12),
+            },
+        })
+
+        console.log('✅ Usuario administrador creado')
+    } else {
+        console.log('ℹ️ Define ADMIN_EMAIL y ADMIN_PASSWORD para crear el admin inicial')
+    }
+
+    // Migrar slugs antiguos si ya existían en la base
+    const legacyCategoryUpdates = [
+        { from: 'sillas', to: 'camas' },
+        { from: 'iluminacion', to: 'escritorio' },
+    ] as const
+
+    for (const legacy of legacyCategoryUpdates) {
+        const oldCategory = await prisma.category.findUnique({ where: { slug: legacy.from } })
+        const newCategory = await prisma.category.findUnique({ where: { slug: legacy.to } })
+
+        if (oldCategory && !newCategory) {
+            await prisma.category.update({
+                where: { id: oldCategory.id },
+                data: { slug: legacy.to },
+            })
+        }
+    }
+
     // Crear categorías
     const categories = await Promise.all([
         prisma.category.upsert({
             where: { slug: 'sofas' },
-            update: {},
+            update: {
+                name: 'Sofás',
+                description: 'Sofás y sillones de diseño contemporáneo',
+                image: 'sofas',
+            },
             create: {
                 name: 'Sofás',
                 slug: 'sofas',
-                description: 'Sofás de diseño contemporáneo y clásico',
-                image: '/images/categories/sofas.jpg',
+                description: 'Sofás y sillones de diseño contemporáneo',
+                image: 'sofas',
             },
         }),
         prisma.category.upsert({
             where: { slug: 'mesas' },
-            update: {},
+            update: {
+                name: 'Comedores',
+                description: 'Mesas de comedor y conjuntos para el hogar',
+                image: 'mesas',
+            },
             create: {
-                name: 'Mesas',
+                name: 'Comedores',
                 slug: 'mesas',
-                description: 'Mesas de comedor, centro y auxiliares',
-                image: '/images/categories/mesas.jpg',
+                description: 'Mesas de comedor y conjuntos para el hogar',
+                image: 'mesas',
             },
         }),
         prisma.category.upsert({
-            where: { slug: 'sillas' },
-            update: {},
+            where: { slug: 'camas' },
+            update: {
+                name: 'Camas',
+                description: 'Camas y colchones para descanso premium',
+                image: 'camas',
+            },
             create: {
-                name: 'Sillas',
-                slug: 'sillas',
-                description: 'Sillas de diseño para comedor y oficina',
-                image: '/images/categories/sillas.jpg',
+                name: 'Camas',
+                slug: 'camas',
+                description: 'Camas y colchones para descanso premium',
+                image: 'camas',
             },
         }),
         prisma.category.upsert({
-            where: { slug: 'iluminacion' },
-            update: {},
+            where: { slug: 'escritorio' },
+            update: {
+                name: 'Escritorios y sillas',
+                description: 'Escritorios y sillas de trabajo para el hogar',
+                image: 'escritorio',
+            },
             create: {
-                name: 'Iluminación',
-                slug: 'iluminacion',
-                description: 'Lámparas y sistemas de iluminación',
-                image: '/images/categories/iluminacion.jpg',
+                name: 'Escritorios y sillas',
+                slug: 'escritorio',
+                description: 'Escritorios y sillas de trabajo para el hogar',
+                image: 'escritorio',
             },
         }),
     ])
+
+    const refreshedCategories = categories
 
     console.log('✅ Categorías creadas')
 
@@ -87,7 +147,7 @@ async function main() {
                 slug: 'sofa-oslo',
                 description: 'Sofá de tres plazas con diseño escandinavo. Tapizado en tela de alta calidad con patas de madera de roble.',
                 price: 2499,
-                categoryId: categories[0].id,
+                categoryId: refreshedCategories[0].id,
                 collectionId: collections[0].id,
                 images: ['/images/products/sofa-oslo-1.jpg', '/images/products/sofa-oslo-2.jpg'],
                 featured: true,
@@ -104,7 +164,7 @@ async function main() {
                 slug: 'mesa-copenhague',
                 description: 'Mesa de comedor extensible con acabado en roble natural. Capacidad para 6-8 personas.',
                 price: 1299,
-                categoryId: categories[1].id,
+                categoryId: refreshedCategories[1].id,
                 collectionId: collections[0].id,
                 images: ['/images/products/mesa-copenhague.jpg'],
                 featured: true,
@@ -119,7 +179,7 @@ async function main() {
                 slug: 'silla-wishbone',
                 description: 'Silla icónica de diseño danés con respaldo en forma de Y. Asiento de cuerda trenzada.',
                 price: 449,
-                categoryId: categories[2].id,
+                categoryId: refreshedCategories[2].id,
                 collectionId: collections[0].id,
                 images: ['/images/products/silla-wishbone.jpg'],
                 featured: false,
@@ -134,7 +194,7 @@ async function main() {
                 slug: 'lampara-arc',
                 description: 'Lámpara de pie con arco en metal dorado. Pantalla de mármol blanco.',
                 price: 899,
-                categoryId: categories[3].id,
+                categoryId: refreshedCategories[3].id,
                 collectionId: collections[1].id,
                 images: ['/images/products/lampara-arc.jpg'],
                 featured: true,

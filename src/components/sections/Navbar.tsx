@@ -2,19 +2,20 @@
 
 import * as React from "react";
 import Link from "next/link";
+import { signOut, useSession } from "next-auth/react";
 import { cn } from "@/lib/utils";
 import { RegisterModal } from "./RegisterModal";
 
 const navLinks = [
-    { href: "#home", label: "Inicio" },
-    { href: "#collections", label: "Colecciones" },
-    { href: "#furniture", label: "Muebles" },
-    { href: "#art", label: "Arte" },
-    { href: "#about", label: "Nosotros" },
-    { href: "#contact", label: "Contacto" },
+    { href: "/#home", label: "Inicio" },
+    { href: "/#furniture", label: "Muebles" },
+    { href: "/#art", label: "Arte" },
+    { href: "/#about", label: "Nosotros" },
+    { href: "/#contact", label: "Contacto" },
 ];
 
 export function Navbar() {
+    const { data: session, status } = useSession();
     const [isScrolled, setIsScrolled] = React.useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
     const [isRegisterModalOpen, setIsRegisterModalOpen] = React.useState(false);
@@ -87,25 +88,48 @@ export function Navbar() {
                                 </span>
                             </button>
 
-                            {/* User/Sign In Button with Text */}
-                            <button
-                                onClick={() => setIsRegisterModalOpen(true)}
-                                className="flex items-center gap-2 px-4 py-2 hover:bg-amber-50 rounded-full transition-colors group"
-                                aria-label="Iniciar Sesión"
-                                title="Iniciar Sesión / Registrarse"
-                            >
-                                <svg
-                                    className="w-5 h-5 text-neutral-700 group-hover:text-amber-600 transition-colors"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
+                            {session ? (
+                                <div className="flex items-center gap-3">
+                                    {session.user.role === "ADMIN" && (
+                                        <Link
+                                            href="/admin/products"
+                                            className="rounded-full bg-amber-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-amber-700"
+                                        >
+                                            Admin
+                                        </Link>
+                                    )}
+                                    <div className="text-right">
+                                        <p className="text-sm font-semibold text-neutral-900">
+                                            {session.user.name || session.user.email}
+                                        </p>
+                                        <button
+                                            onClick={() => signOut({ callbackUrl: "/" })}
+                                            className="text-xs font-medium text-neutral-500 transition-colors hover:text-amber-600"
+                                        >
+                                            Cerrar sesión
+                                        </button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <button
+                                    onClick={() => setIsRegisterModalOpen(true)}
+                                    className="flex items-center gap-2 px-4 py-2 hover:bg-amber-50 rounded-full transition-colors group"
+                                    aria-label="Iniciar Sesión"
+                                    title="Iniciar Sesión"
                                 >
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                </svg>
-                                <span className="text-sm font-medium text-neutral-700 group-hover:text-amber-600 transition-colors">
-                                    Iniciar Sesión
-                                </span>
-                            </button>
+                                    <svg
+                                        className="w-5 h-5 text-neutral-700 group-hover:text-amber-600 transition-colors"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                    </svg>
+                                    <span className="text-sm font-medium text-neutral-700 group-hover:text-amber-600 transition-colors">
+                                        Iniciar Sesión
+                                    </span>
+                                </button>
+                            )}
                         </div>
 
                         {/* Mobile Menu Button */}
@@ -157,16 +181,39 @@ export function Navbar() {
                             </a>
                         ))}
 
-                        {/* Mobile Sign In Button */}
-                        <button
-                            onClick={() => {
-                                setIsRegisterModalOpen(true);
-                                setIsMobileMenuOpen(false);
-                            }}
-                            className="w-full text-left px-4 py-2 bg-neutral-800 text-white font-semibold rounded-lg hover:bg-neutral-900 transition-colors"
-                        >
-                            Iniciar Sesión / Registrarse
-                        </button>
+                        {session ? (
+                            <div className="space-y-3 border-t border-neutral-200 pt-4">
+                                <p className="text-sm font-semibold text-neutral-900">
+                                    {session.user.name || session.user.email}
+                                </p>
+                                {session.user.role === "ADMIN" && (
+                                    <Link
+                                        href="/admin/products"
+                                        onClick={() => setIsMobileMenuOpen(false)}
+                                        className="block rounded-lg bg-amber-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-amber-700"
+                                    >
+                                        Panel Admin
+                                    </Link>
+                                )}
+                                <button
+                                    onClick={() => signOut({ callbackUrl: "/" })}
+                                    className="w-full text-left text-sm font-medium text-neutral-700 hover:text-amber-600"
+                                >
+                                    Cerrar sesión
+                                </button>
+                            </div>
+                        ) : (
+                            <button
+                                onClick={() => {
+                                    setIsRegisterModalOpen(true);
+                                    setIsMobileMenuOpen(false);
+                                }}
+                                disabled={status === "loading"}
+                                className="w-full text-left px-4 py-2 bg-neutral-800 text-white font-semibold rounded-lg hover:bg-neutral-900 transition-colors disabled:opacity-50"
+                            >
+                                Iniciar Sesión
+                            </button>
+                        )}
                     </div>
                 </div>
             </nav>
