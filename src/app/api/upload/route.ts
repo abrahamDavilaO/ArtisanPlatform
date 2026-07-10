@@ -29,11 +29,40 @@ async function uploadLocally(file: File, folder: string) {
     return `/uploads/${relativePath.replace(/\\/g, "/")}`;
 }
 
+function getBlobToken() {
+    const token = process.env.BLOB_READ_WRITE_TOKEN?.trim();
+
+    if (!token) {
+        return undefined;
+    }
+
+    return token.replace(/^["']|["']$/g, "");
+}
+
 async function uploadToBlob(file: File, folder: string) {
     const pathname = buildFileName(file.name, folder);
+
+    // On Vercel, prefer OIDC auth when Blob is connected to the project.
+    // Passing a bad manual token overrides OIDC and causes "Access denied".
+    if (process.env.VERCEL) {
+        const blob = await put(pathname, file, {
+            access: "public",
+        });
+
+        return blob.url;
+    }
+
+    const token = getBlobToken();
+
+    if (!token) {
+        throw new Error(
+            "Falta BLOB_READ_WRITE_TOKEN. En local copia el token desde Vercel Blob → .env.local."
+        );
+    }
+
     const blob = await put(pathname, file, {
         access: "public",
-        token: process.env.BLOB_READ_WRITE_TOKEN,
+        token,
     });
 
     return blob.url;
@@ -50,14 +79,8 @@ async function uploadFile(file: File) {
 
     const folder = "media";
 
-    if (process.env.BLOB_READ_WRITE_TOKEN) {
+    if (process.env.VERCEL || getBlobToken()) {
         return uploadToBlob(file, folder);
-    }
-
-    if (process.env.VERCEL) {
-        throw new Error(
-            "En producción debes configurar Vercel Blob. Ve a Vercel → Storage → Create Blob, o pega una URL de imagen en el formulario."
-        );
     }
 
     return uploadLocally(file, folder);
