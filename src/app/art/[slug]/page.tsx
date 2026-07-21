@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Navbar } from "@/components/sections/Navbar";
 import { Footer } from "@/components/sections/Footer";
-import { ProductImagePlaceholder } from "@/components/furniture/ProductImagePlaceholder";
+import { ProductImageGallery } from "@/components/furniture/ProductImageGallery";
 import { ProductSpecsAccordion } from "@/components/furniture/ProductSpecsAccordion";
 import { ProductStickyBar } from "@/components/furniture/ProductStickyBar";
 import { SimilarArtGrid } from "@/components/art/SimilarArtGrid";
@@ -24,7 +24,7 @@ export default async function ArtDetailPage({ params }: ArtDetailPageProps) {
     }
 
     const similarPieces = await getSimilarArtPieces(artPiece.id);
-    const extraImages = artPiece.images.filter((url) => url && url !== artPiece.image);
+    const galleryImages = [artPiece.image, ...artPiece.images];
 
     const specItems = [
         {
@@ -76,36 +76,13 @@ export default async function ArtDetailPage({ params }: ArtDetailPageProps) {
                     </nav>
 
                     <section className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
-                        <div className="space-y-4">
-                            <div className="overflow-hidden rounded-2xl bg-white shadow-sm">
-                                <div className="aspect-[4/5] lg:min-h-[620px]">
-                                    {artPiece.image ? (
-                                        // eslint-disable-next-line @next/next/no-img-element
-                                        <img
-                                            src={artPiece.image}
-                                            alt={artPiece.title}
-                                            className="h-full w-full object-contain bg-neutral-50"
-                                        />
-                                    ) : (
-                                        <ProductImagePlaceholder label="Imagen de la obra" />
-                                    )}
-                                </div>
-                            </div>
-
-                            {extraImages.length > 0 && (
-                                <div className="grid grid-cols-3 gap-3">
-                                    {extraImages.map((image) => (
-                                        // eslint-disable-next-line @next/next/no-img-element
-                                        <img
-                                            key={image}
-                                            src={image}
-                                            alt={artPiece.title}
-                                            className="aspect-square rounded-xl object-cover bg-white shadow-sm"
-                                        />
-                                    ))}
-                                </div>
-                            )}
-                        </div>
+                        <ProductImageGallery
+                            images={galleryImages}
+                            alt={artPiece.title}
+                            placeholderLabel="Imagen de la obra"
+                            imageFit="contain"
+                            mainFrameClassName="aspect-[4/5] lg:min-h-[620px]"
+                        />
 
                         <div className="lg:sticky lg:top-28">
                             {artPiece.featured && (
