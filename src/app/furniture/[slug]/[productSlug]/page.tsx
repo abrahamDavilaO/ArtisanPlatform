@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Navbar } from "@/components/sections/Navbar";
 import { Footer } from "@/components/sections/Footer";
-import { ProductImagePlaceholder } from "@/components/furniture/ProductImagePlaceholder";
+import { ProductImageGallery } from "@/components/furniture/ProductImageGallery";
 import { ProductSpecsAccordion } from "@/components/furniture/ProductSpecsAccordion";
 import { SimilarProductsGrid } from "@/components/furniture/SimilarProductsGrid";
 import { ProductStickyBar } from "@/components/furniture/ProductStickyBar";
@@ -25,7 +25,6 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     }
 
     const similarProducts = await getSimilarProducts(product.categoryId, product.id);
-    const image = product.images[0];
 
     const specItems = [
         {
@@ -70,20 +69,11 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
                     </nav>
 
                     <section className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
-                        <div className="overflow-hidden rounded-2xl bg-white shadow-sm">
-                            <div className="aspect-[4/5] lg:aspect-square">
-                                {image ? (
-                                    // eslint-disable-next-line @next/next/no-img-element
-                                    <img
-                                        src={image}
-                                        alt={product.name}
-                                        className="h-full w-full object-cover"
-                                    />
-                                ) : (
-                                    <ProductImagePlaceholder label="Sube la foto desde Admin" />
-                                )}
-                            </div>
-                        </div>
+                        <ProductImageGallery
+                            images={product.images}
+                            alt={product.name}
+                            placeholderLabel="Sube la foto desde Admin"
+                        />
 
                         <div className="lg:sticky lg:top-28">
                             {product.featured && (

@@ -45,7 +45,7 @@ const socialLinks = [
     },
     {
         name: "Facebook",
-        href: "#",
+        href: "https://www.facebook.com/share/17gPmRBMVZ/",
         icon: (
             <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
@@ -74,6 +74,8 @@ export function Footer() {
                                     key={social.name}
                                     href={social.href}
                                     aria-label={social.name}
+                                    target={social.href.startsWith("http") ? "_blank" : undefined}
+                                    rel={social.href.startsWith("http") ? "noopener noreferrer" : undefined}
                                     className="w-10 h-10 rounded-full bg-neutral-800 flex items-center justify-center hover:bg-amber-600 transition-colors"
                                 >
                                     {social.icon}
